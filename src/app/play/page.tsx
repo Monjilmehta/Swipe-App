@@ -60,6 +60,7 @@ export default function PlayPage() {
             text: s.text,
             shortLabel: s.shortLabel,
             category: s.category,
+            character: s.character,
           }));
           setScenarios(shuffleArray(mockScenarios));
         }
@@ -72,6 +73,7 @@ export default function PlayPage() {
           text: s.text,
           shortLabel: s.shortLabel,
           category: s.category,
+          character: s.character,
         }));
         setScenarios(shuffleArray(mockScenarios));
       }

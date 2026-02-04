@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-const ADMIN_PASSWORD = 'admin123';
+import { motion } from 'framer-motion';
+import { Lock, LogIn } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -11,72 +12,71 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
+    setError('');
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem('admin-auth', 'true');
+    // Simple password check (in production, use proper authentication)
+    if (password === 'admin123') {
+      localStorage.setItem('admin-auth', 'true');
       router.push('/admin/dashboard');
     } else {
       setError('Invalid password');
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-bold text-white">Admin Portal</h1>
-          <p className="text-white/60 mt-2">Enter password to continue</p>
-        </div>
-
-        <form onSubmit={handleLogin} className="glass-card rounded-2xl p-6 space-y-4">
-          <div>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-11 px-4 rounded-xl border-2 border-white/10 bg-white/5 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              autoFocus
-            />
-          </div>
-
-          {error && (
-            <div className="flex items-center gap-2 text-red-400 text-sm">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {error}
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <motion.div
+        className="max-w-md w-full"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="glass-card rounded-3xl p-8">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-500/20 flex items-center justify-center">
+              <Lock className="w-8 h-8 text-purple-400" />
             </div>
-          )}
+            <h1 className="text-2xl font-bold text-white">Admin Access</h1>
+            <p className="text-white/60 mt-2">Enter your password to continue</p>
+          </div>
 
-          <button
-            type="submit"
-            disabled={isLoading || !password}
-            className="w-full h-11 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
-          >
-            {isLoading ? 'Signing in...' : 'Sign In'}
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-white/70 mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Enter admin password"
+              />
+              {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+            </div>
 
-        <p className="text-center mt-6 text-sm text-white/40">
-          Default password: <code className="bg-white/10 px-2 py-0.5 rounded">admin123</code>
-        </p>
-      </div>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600"
+              size="lg"
+            >
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <LogIn className="w-5 h-5 mr-2" />
+                  Login
+                </>
+              )}
+            </Button>
+          </form>
+        </div>
+      </motion.div>
     </div>
   );
 }

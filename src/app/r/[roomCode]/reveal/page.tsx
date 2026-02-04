@@ -1,26 +1,21 @@
 'use client';
 
-import { useRouter, useParams } from 'next/navigation';
-import { RevealSlideshow } from '@/components/swipe/RevealSlideshow';
-import { getAllRevealSlides } from '@/lib/mock-data';
+import { useEffect, use } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function RoomRevealPage() {
+export default function RoomRevealPage({ params }: { params: Promise<{ roomCode: string }> }) {
+  const { roomCode } = use(params);
   const router = useRouter();
-  const params = useParams();
-  const roomCode = params.roomCode as string;
 
-  const handleComplete = () => {
-    router.push('/');
-  };
+  useEffect(() => {
+    // Store the room code and redirect to main reveal
+    localStorage.setItem('swipe-room-code', roomCode);
+    router.replace('/reveal');
+  }, [roomCode, router]);
 
-  const slides = getAllRevealSlides().map((slide) => ({
-    id: slide.id,
-    title: slide.title,
-    body: slide.body,
-    imageUrl: slide.imageUrl,
-    quote: slide.quote,
-    quoteAuthor: slide.quoteAuthor,
-  }));
-
-  return <RevealSlideshow slides={slides} onComplete={handleComplete} />;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 }
